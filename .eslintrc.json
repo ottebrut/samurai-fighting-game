@@ -22,11 +22,16 @@
   "plugins": [
     "react",
     "@typescript-eslint",
+    "unused-imports",
     "prettier"
   ],
   "rules": {
     "@typescript-eslint/comma-dangle": ["off"],
     "react/jsx-props-no-spreading": ["warn"],
-    "no-shadow": ["off"]
+    "no-shadow": ["off"],
+    "import/prefer-default-export": ["off"],
+    "unused-imports/no-unused-imports": ["error"],
+    "class-methods-use-this": ["off"],
+    "comma-dangle": ["off"]
   }
 }
