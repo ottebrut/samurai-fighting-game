@@ -1,5 +1,6 @@
 import { Sprite } from "./sprite";
 import { Direction, Size } from "./models";
+import { Position } from "./position";
 
 export class CanvasContainer {
   public static setupCanvas(canvas: HTMLCanvasElement): void {
@@ -27,12 +28,13 @@ export class CanvasContainer {
     };
     const player0 = new Sprite({
       ...playerArguments,
-      position: { x: 0, y: 0 },
+      position: new Position({ x: 0, y: 0 }),
     });
     const player1 = new Sprite({
       ...playerArguments,
-      position: { x: 400, y: 100 },
+      position: new Position({ x: 400, y: 100 }),
       color: "blue",
+      attackingBoxOffset: new Position({ x: 50, y: 0 }),
     });
 
     const animate = () => {
@@ -60,6 +62,9 @@ export class CanvasContainer {
         case "w":
           player0.starJumpPhase();
           break;
+        case "s":
+          player0.startAttackPhase(player1);
+          break;
 
         case "ArrowLeft":
           player1.moveInDirection(Direction.left);
@@ -69,6 +74,9 @@ export class CanvasContainer {
           break;
         case "ArrowUp":
           player1.starJumpPhase();
+          break;
+        case "ArrowDown":
+          player1.startAttackPhase(player0);
           break;
         // no default
       }
@@ -85,6 +93,9 @@ export class CanvasContainer {
         case "w":
           player0.stopJumpPhase();
           break;
+        case "s":
+          player0.stopAttackPhase();
+          break;
 
         case "ArrowLeft":
           player1.stopInDirection(Direction.left);
@@ -94,6 +105,9 @@ export class CanvasContainer {
           break;
         case "ArrowUp":
           player1.stopJumpPhase();
+          break;
+        case "ArrowDown":
+          player1.stopAttackPhase();
           break;
         // no default
       }

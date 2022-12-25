@@ -1,59 +1,98 @@
-import { Direction, JumpState, Phase, Position, Size } from "./models";
+import { Direction, JumpState, Phase, Size } from "./models";
 import { gravity } from "./constants";
+import { getFullPosition } from "./utils";
+import { Position } from "./position";
 
-const defaultJumpState = { counter: 0, phase: Phase.ended };
+const defaultJumpState: JumpState = { counter: 0, phase: Phase.ended };
 
 export class Sprite {
   private readonly canvasSize: Size;
 
   private readonly canvasContext: CanvasRenderingContext2D;
 
-  private readonly size: Size = { width: 50, height: 150 };
+  private readonly _size: Size = { width: 50, height: 150 };
 
   private readonly color: string;
 
-  private position: Position;
+  private readonly _position: Position;
 
   private velocityY = 0;
 
   private currentDirections: Direction[] = [];
 
-  private jumpState: JumpState = defaultJumpState;
+  private jumpState = defaultJumpState;
+
+  private readonly attackingBox: {
+    position: Position;
+    size: Size;
+    offset: Position;
+  };
+
+  private isAttacking = false;
+
+  private attackPhase = Phase.started;
+
+  private health = 100;
+
+  public get size(): Size {
+    return { ...this._size };
+  }
+
+  public get position(): Position {
+    return new Position(this._position);
+  }
 
   constructor({
     canvasSize,
     canvasContext,
     position,
     color = "red",
+    attackingBoxOffset = new Position({ x: 0, y: 0 }),
   }: {
     canvasSize: Size;
     canvasContext: CanvasRenderingContext2D;
     position: Position;
     color?: string;
+    attackingBoxOffset?: Position;
   }) {
     this.canvasSize = canvasSize;
     this.canvasContext = canvasContext;
-    this.position = position;
+    this._position = position;
     this.color = color;
+
+    this.attackingBox = {
+      position: new Position(this._position),
+      size: { width: 100, height: 50 },
+      offset: attackingBoxOffset,
+    };
   }
 
   public draw(): void {
     this.canvasContext.fillStyle = this.color;
     this.canvasContext.fillRect(
-      this.position.x,
-      this.position.y,
-      this.size.width,
-      this.size.height
+      this._position.x,
+      this._position.y,
+      this._size.width,
+      this._size.height
     );
+
+    if (this.isAttacking) {
+      this.canvasContext.fillStyle = "green";
+      this.canvasContext.fillRect(
+        this.attackingBox.position.x,
+        this.attackingBox.position.y,
+        this.attackingBox.size.width,
+        this.attackingBox.size.height
+      );
+    }
   }
 
   public update(): void {
     this.draw();
 
-    this.position.y += this.velocityY;
-
-    if (this.position.y + this.size.height >= this.canvasSize.height) {
-      this.position.y = this.canvasSize.height - this.size.height;
+    this._position.y += this.velocityY;
+    if (this._position.y + this._size.height >= this.canvasSize.height) {
+      this._position.y = this.canvasSize.height - this._size.height;
       this.velocityY = 0;
 
       if (this.jumpState.phase === Phase.ended) {
@@ -66,8 +105,10 @@ export class Sprite {
     if (this.currentDirections.length) {
       const direction =
         this.currentDirections[this.currentDirections.length - 1];
-      this.position.x += direction === Direction.left ? -6 : 6;
+      this._position.x += direction === Direction.left ? -6 : 6;
     }
+
+    this.attackingBox.position = this._position.minus(this.attackingBox.offset);
   }
 
   public moveInDirection(direction: Direction): void {
@@ -101,5 +142,34 @@ export class Sprite {
     } else if (this.jumpState.phase === Phase.started) {
       this.jumpState = { ...this.jumpState, phase: Phase.ended };
     }
+  }
+
+  public startAttackPhase(playerToAttack: Sprite): void {
+    if (this.isAttacking || this.attackPhase === Phase.started) {
+      return;
+    }
+
+    this.attackPhase = Phase.started;
+    this.isAttacking = true;
+    setTimeout(() => {
+      this.isAttacking = false;
+    }, 100);
+
+    const attackingPosition = getFullPosition(this.attackingBox);
+    const playerToAttackPosition = getFullPosition(playerToAttack);
+    if (
+      attackingPosition.leftTop.lte(playerToAttackPosition.rightBottom) &&
+      playerToAttackPosition.leftTop.lte(attackingPosition.rightBottom)
+    ) {
+      playerToAttack.getHit();
+    }
+  }
+
+  public stopAttackPhase(): void {
+    this.attackPhase = Phase.ended;
+  }
+
+  public getHit(): void {
+    this.health -= 20;
   }
 }
