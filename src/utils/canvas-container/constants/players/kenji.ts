@@ -12,10 +12,10 @@ export const kenjiParameters: PartialPlayerParameters = {
   stateSprite: {
     [PlayerState.idle]: {
       imageSrc: "./assets/kenji/Idle.png",
-      imageMaxFrames: 8,
+      imageMaxFrames: 4,
     },
     [PlayerState.run]: {
-      imageSrc: "./assets/Kenji/Run.png",
+      imageSrc: "./assets/kenji/Run.png",
       imageMaxFrames: 8,
     },
   },

@@ -20,7 +20,7 @@ export interface PlayerParameters extends SpriteParameters {
   healthBoxSize: Size;
   attackingBoxOffset?: Position;
 
-  stateSprite: PlayerStateSpriteArgument;
+  stateSprite: PlayerStateSprite;
 }
 
 export enum Direction {
@@ -51,14 +51,6 @@ export enum PlayerState {
 }
 
 export type PlayerStateSprite = Record<
-  PlayerState,
-  {
-    image: HTMLImageElement;
-    imageMaxFrames: number;
-  }
->;
-
-export type PlayerStateSpriteArgument = Record<
   PlayerState,
   {
     imageSrc: string;

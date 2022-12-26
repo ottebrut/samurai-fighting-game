@@ -9,10 +9,11 @@ import { Position } from "./position";
 import { Sprite } from "./sprite";
 import {
   Direction,
-  PlayerParameters,
   JumpState,
   KeyType,
   Phase,
+  PlayerParameters,
+  PlayerState,
   PlayerStateSprite,
 } from "./models";
 
@@ -58,7 +59,9 @@ export class Player extends Sprite {
 
   public readonly keyType: KeyType;
 
-  private readonly playerStateSprite: PlayerStateSprite;
+  private readonly stateSprite: PlayerStateSprite;
+
+  private currentState: PlayerState = PlayerState.idle;
 
   public get health(): number {
     return this._health;
@@ -83,16 +86,7 @@ export class Player extends Sprite {
     this.healthBar = healthBar;
     this.healthBoxSize = healthBoxSize;
 
-    this.playerStateSprite = Object.fromEntries(
-      Object.entries(data.stateSprite).map(([state, sprite]) => {
-        const updatedSprite = {
-          image: new Image(),
-          imageMaxFrames: sprite.imageMaxFrames,
-        };
-        updatedSprite.image.src = sprite.imageSrc;
-        return [state, updatedSprite];
-      })
-    ) as PlayerStateSprite;
+    this.stateSprite = data.stateSprite;
   }
 
   public update(): void {
@@ -125,6 +119,10 @@ export class Player extends Sprite {
       const direction =
         this.currentDirections[this.currentDirections.length - 1];
       this._position.x += direction === Direction.left ? -6 : 6;
+
+      this.switchState(PlayerState.run);
+    } else {
+      this.switchState(PlayerState.idle);
     }
 
     this.attackingBox.position = this._position.minus(this.attackingBox.offset);
@@ -207,6 +205,19 @@ export class Player extends Sprite {
    */
   public stopAttackPhase(): void {
     this.attackPhase = Phase.ended;
+  }
+
+  private switchState(state: PlayerState) {
+    if (this.currentState !== state) {
+      this.currentState = state;
+
+      const stateSprite = this.stateSprite[state];
+      this.image.src = stateSprite.imageSrc;
+      this.imageMaxFrames = stateSprite.imageMaxFrames;
+
+      this.imageCurrentFrame = 0;
+      this.framesElapsed = 0;
+    }
   }
 
   public getHit(): void {

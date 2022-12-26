@@ -13,7 +13,7 @@ export class Sprite {
 
   protected readonly scale: number;
 
-  protected readonly imageMaxFrames: number;
+  protected imageMaxFrames: number;
 
   protected imageCurrentFrame = 0;
 
