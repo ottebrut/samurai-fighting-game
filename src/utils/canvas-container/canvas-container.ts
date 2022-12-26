@@ -1,6 +1,7 @@
-import { Sprite } from "./classes/sprite";
 import { Direction, KeyType, Size } from "./models";
 import { Position } from "./classes/position";
+import { Fighter } from "./classes/fighter";
+import { Sprite } from "./classes/sprite";
 
 export class CanvasContainer {
   public static setupCanvas(
@@ -27,9 +28,9 @@ export class CanvasContainer {
     height: 576,
   };
 
-  private readonly player0: Sprite;
+  private readonly player0: Fighter;
 
-  private readonly player1: Sprite;
+  private readonly player1: Fighter;
 
   private isGameFinished = false;
 
@@ -49,26 +50,37 @@ export class CanvasContainer {
       canvasSize: this.size,
       canvasContext: this.context,
     };
-    this.player0 = new Sprite({
+    this.player0 = new Fighter({
       ...playerArguments,
       position: new Position({ x: 0, y: 0 }),
       healthBar: player0HealthBar,
+      imageSrc: "",
     });
-    this.player1 = new Sprite({
+    this.player1 = new Fighter({
       ...playerArguments,
       position: new Position({ x: 400, y: 100 }),
       color: "blue",
       attackingBoxOffset: new Position({ x: 50, y: 0 }),
       healthBar: player1HealthBar,
+      imageSrc: "",
     });
   }
 
   private setupCanvas(): void {
+    const background = new Sprite({
+      canvasSize: this.size,
+      canvasContext: this.context,
+      position: new Position({ x: 0, y: 0 }),
+      imageSrc: "./assets/background.png",
+    });
+
     const animate = () => {
       window.requestAnimationFrame(animate);
 
       this.context.fillStyle = "black";
       this.context.fillRect(0, 0, this.size.width, this.size.height);
+
+      background.update();
 
       this.player0.update();
       this.player1.update();
@@ -96,8 +108,8 @@ export class CanvasContainer {
   }
 
   private setupKeyListenerForPlayer(
-    player0: Sprite,
-    player1: Sprite,
+    player0: Fighter,
+    player1: Fighter,
     keyType: KeyType
   ) {
     window.addEventListener("keydown", (event) => {
