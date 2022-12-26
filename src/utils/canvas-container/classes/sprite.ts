@@ -32,7 +32,7 @@ export class Sprite {
 
   private attackPhase = Phase.started;
 
-  private health = 100;
+  private _health = 100;
 
   private readonly healthBar: HTMLDivElement;
 
@@ -42,6 +42,10 @@ export class Sprite {
 
   public get position(): Position {
     return new Position(this._position);
+  }
+
+  public get health(): number {
+    return this._health;
   }
 
   constructor({
@@ -176,7 +180,7 @@ export class Sprite {
   }
 
   public getHit(): void {
-    this.health -= 20;
-    this.healthBar.style.width = `${this.health}%`;
+    this._health -= 20;
+    this.healthBar.style.width = `${this._health}%`;
   }
 }

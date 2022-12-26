@@ -6,9 +6,18 @@ export class CanvasContainer {
   public static setupCanvas(
     canvas: HTMLCanvasElement,
     player0HealthBar: HTMLDivElement,
-    player1HealthBar: HTMLDivElement
+    player1HealthBar: HTMLDivElement,
+    timerContainer: HTMLDivElement,
+    resultContainer: HTMLDivElement
   ): void {
-    new CanvasContainer(canvas).setupCanvas(player0HealthBar, player1HealthBar);
+    const canvasContainer = new CanvasContainer(
+      canvas,
+      player0HealthBar,
+      player1HealthBar,
+      timerContainer,
+      resultContainer
+    );
+    canvasContainer.setupCanvas();
   }
 
   private readonly context: CanvasRenderingContext2D;
@@ -18,74 +27,91 @@ export class CanvasContainer {
     height: 576,
   };
 
-  constructor(private readonly canvas: HTMLCanvasElement) {
-    this.context = canvas.getContext("2d")!;
-  }
+  private readonly player0: Sprite;
 
-  private setupCanvas(
+  private readonly player1: Sprite;
+
+  private isGameFinished = false;
+
+  constructor(
+    private readonly canvas: HTMLCanvasElement,
     player0HealthBar: HTMLDivElement,
-    player1HealthBar: HTMLDivElement
-  ): void {
-    this.canvas.width = 1024;
-    this.canvas.height = 576;
+    player1HealthBar: HTMLDivElement,
+    private readonly timerContainer: HTMLDivElement,
+    private readonly resultContainer: HTMLDivElement
+  ) {
+    this.context = canvas.getContext("2d")!;
+
+    this.canvas.width = this.size.width;
+    this.canvas.height = this.size.height;
 
     const playerArguments = {
       canvasSize: this.size,
       canvasContext: this.context,
     };
-    const player0 = new Sprite({
+    this.player0 = new Sprite({
       ...playerArguments,
       position: new Position({ x: 0, y: 0 }),
       healthBar: player0HealthBar,
     });
-    const player1 = new Sprite({
+    this.player1 = new Sprite({
       ...playerArguments,
       position: new Position({ x: 400, y: 100 }),
       color: "blue",
       attackingBoxOffset: new Position({ x: 50, y: 0 }),
       healthBar: player1HealthBar,
     });
+  }
 
+  private setupCanvas(): void {
     const animate = () => {
       window.requestAnimationFrame(animate);
 
       this.context.fillStyle = "black";
       this.context.fillRect(0, 0, this.size.width, this.size.height);
-      player0.update();
-      player1.update();
+
+      this.player0.update();
+      this.player1.update();
     };
     animate();
 
-    this.setupMovement(player0, player1);
+    this.setupKeyListeners();
+    this.setupTimer();
   }
 
-  private setupMovement(player0: Sprite, player1: Sprite): void {
+  private setupKeyListeners(): void {
     window.addEventListener("keydown", (event) => {
       switch (event.key) {
         case "a":
-          player0.moveInDirection(Direction.left);
+          this.player0.moveInDirection(Direction.left);
           break;
         case "d":
-          player0.moveInDirection(Direction.right);
+          this.player0.moveInDirection(Direction.right);
           break;
         case "w":
-          player0.starJumpPhase();
+          this.player0.starJumpPhase();
           break;
         case "s":
-          player0.startAttackPhase(player1);
+          this.player0.startAttackPhase(this.player1);
+          if (this.player1.health <= 0) {
+            this.finishGame();
+          }
           break;
 
         case "ArrowLeft":
-          player1.moveInDirection(Direction.left);
+          this.player1.moveInDirection(Direction.left);
           break;
         case "ArrowRight":
-          player1.moveInDirection(Direction.right);
+          this.player1.moveInDirection(Direction.right);
           break;
         case "ArrowUp":
-          player1.starJumpPhase();
+          this.player1.starJumpPhase();
           break;
         case "ArrowDown":
-          player1.startAttackPhase(player0);
+          this.player1.startAttackPhase(this.player0);
+          if (this.player0.health <= 0) {
+            this.finishGame();
+          }
           break;
         // no default
       }
@@ -94,32 +120,72 @@ export class CanvasContainer {
     window.addEventListener("keyup", (event) => {
       switch (event.key) {
         case "a":
-          player0.stopInDirection(Direction.left);
+          this.player0.stopInDirection(Direction.left);
           break;
         case "d":
-          player0.stopInDirection(Direction.right);
+          this.player0.stopInDirection(Direction.right);
           break;
         case "w":
-          player0.stopJumpPhase();
+          this.player0.stopJumpPhase();
           break;
         case "s":
-          player0.stopAttackPhase();
+          this.player0.stopAttackPhase();
           break;
 
         case "ArrowLeft":
-          player1.stopInDirection(Direction.left);
+          this.player1.stopInDirection(Direction.left);
           break;
         case "ArrowRight":
-          player1.stopInDirection(Direction.right);
+          this.player1.stopInDirection(Direction.right);
           break;
         case "ArrowUp":
-          player1.stopJumpPhase();
+          this.player1.stopJumpPhase();
           break;
         case "ArrowDown":
-          player1.stopAttackPhase();
+          this.player1.stopAttackPhase();
           break;
         // no default
       }
     });
+  }
+
+  private setupTimer() {
+    const setSecondsToHtml = (seconds: number) => {
+      this.timerContainer.innerHTML = seconds.toString();
+    };
+
+    let seconds = 10;
+    setSecondsToHtml(seconds);
+
+    const decreaseSecond = () => {
+      if (this.isGameFinished) {
+        return;
+      }
+
+      seconds -= 1;
+      setSecondsToHtml(seconds);
+
+      if (seconds) {
+        setTimeout(decreaseSecond, 1000);
+      } else {
+        this.finishGame();
+      }
+    };
+    setTimeout(decreaseSecond, 1000);
+  }
+
+  private finishGame(): void {
+    this.isGameFinished = true;
+
+    const setResult = (result: string) => {
+      this.resultContainer.innerHTML = result;
+    };
+    if (this.player0.health === this.player1.health) {
+      setResult("Draw");
+    } else if (this.player0.health > this.player1.health) {
+      setResult("Maoko wins");
+    } else {
+      setResult("Kenji wins");
+    }
   }
 }

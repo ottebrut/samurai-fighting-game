@@ -6,12 +6,16 @@ function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const player0HealthBarRef = useRef<HTMLDivElement>(null);
   const player1HealthBarRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<HTMLDivElement>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     CanvasContainer.setupCanvas(
       canvasRef.current!,
       player0HealthBarRef.current!,
-      player1HealthBarRef.current!
+      player1HealthBarRef.current!,
+      timerRef.current!,
+      resultRef.current!
     );
   }, []);
 
@@ -24,11 +28,16 @@ function App() {
             ref={player0HealthBarRef}
           />
         </div>
-        <div className="timer">60</div>
+        <div className="timer" ref={timerRef}>
+          60
+        </div>
         <div className="health-bar-container">
           <div className="health-bar" ref={player1HealthBarRef} />
         </div>
       </div>
+
+      <div className="result" ref={resultRef} />
+
       <canvas ref={canvasRef} />
     </div>
   );
