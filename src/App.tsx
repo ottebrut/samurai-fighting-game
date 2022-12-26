@@ -1,6 +1,6 @@
 import "./App.css";
 import { useEffect, useRef } from "react";
-import { CanvasContainer } from "./services/canvas-container";
+import { CanvasContainer } from "./utils/canvas-container/canvas-container";
 
 function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);

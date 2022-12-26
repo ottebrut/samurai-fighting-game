@@ -1,6 +1,6 @@
-import { Direction, JumpState, Phase, Size } from "./models";
-import { gravity } from "./constants";
-import { getFullPosition } from "./utils";
+import { Direction, JumpState, Phase, Size } from "../models";
+import { gravity } from "../constants";
+import { getFullPosition } from "../functions/get-full-position";
 import { Position } from "./position";
 
 const defaultJumpState: JumpState = { counter: 0, phase: Phase.ended };

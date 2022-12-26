@@ -1,5 +1,5 @@
-import { Position } from "./position";
-import { Size } from "./models";
+import { Position } from "../classes/position";
+import { Size } from "../models";
 
 export function getFullPosition(box: { position: Position; size: Size }): {
   leftTop: Position;

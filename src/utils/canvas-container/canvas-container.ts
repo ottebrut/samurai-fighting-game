@@ -1,6 +1,6 @@
-import { Sprite } from "./sprite";
+import { Sprite } from "./classes/sprite";
 import { Direction, Size } from "./models";
-import { Position } from "./position";
+import { Position } from "./classes/position";
 
 export class CanvasContainer {
   public static setupCanvas(canvas: HTMLCanvasElement): void {
