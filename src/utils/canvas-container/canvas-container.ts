@@ -1,7 +1,8 @@
-import { Direction, KeyType, Size } from "./models";
+import { Size } from "./models";
 import { Position } from "./classes/position";
-import { Fighter } from "./classes/fighter";
+import { Player } from "./classes/player";
 import { Sprite } from "./classes/sprite";
+import { Direction, SpriteParameters } from "./classes/models";
 
 export class CanvasContainer {
   public static setupCanvas(
@@ -28,11 +29,21 @@ export class CanvasContainer {
     height: 576,
   };
 
-  private readonly player0: Fighter;
+  private readonly player0: Player;
 
-  private readonly player1: Fighter;
+  private readonly player1: Player;
 
   private isGameFinished = false;
+
+  private get spriteParams(): Pick<
+    SpriteParameters,
+    "canvasSize" | "canvasContext"
+  > {
+    return {
+      canvasSize: { ...this.size },
+      canvasContext: this.context,
+    };
+  }
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -46,36 +57,32 @@ export class CanvasContainer {
     this.canvas.width = this.size.width;
     this.canvas.height = this.size.height;
 
-    const playerArguments = {
-      canvasSize: { ...this.size },
-      canvasContext: this.context,
-    };
-    this.player0 = new Fighter({
-      ...playerArguments,
+    this.player0 = new Player({
+      ...this.spriteParams,
       position: new Position({ x: 0, y: 0 }),
       healthBar: player0HealthBar,
       imageSrc: "",
+      type: "left",
     });
-    this.player1 = new Fighter({
-      ...playerArguments,
+    this.player1 = new Player({
+      ...this.spriteParams,
       position: new Position({ x: 400, y: 100 }),
       color: "blue",
       attackingBoxOffset: new Position({ x: 50, y: 0 }),
       healthBar: player1HealthBar,
       imageSrc: "",
+      type: "right",
     });
   }
 
   private setupAnimation(): void {
     const background = new Sprite({
-      canvasSize: { ...this.size },
-      canvasContext: this.context,
+      ...this.spriteParams,
       position: new Position({ x: 0, y: 0 }),
       imageSrc: "./assets/background.png",
     });
     const shop = new Sprite({
-      canvasSize: { ...this.size },
-      canvasContext: this.context,
+      ...this.spriteParams,
       position: new Position({ x: 620, y: 127 }),
       imageSrc: "./assets/shop.png",
       scale: 2.75,
@@ -102,38 +109,24 @@ export class CanvasContainer {
   }
 
   private setupKeyListeners(): void {
-    this.setupKeyListenerForPlayer(this.player0, this.player1, {
-      left: "a",
-      right: "d",
-      jump: "w",
-      attack: "s",
-    });
+    this.setupKeyListenerForPlayer(this.player0, this.player1);
 
-    this.setupKeyListenerForPlayer(this.player1, this.player0, {
-      left: "ArrowLeft",
-      right: "ArrowRight",
-      jump: "ArrowUp",
-      attack: "ArrowDown",
-    });
+    this.setupKeyListenerForPlayer(this.player1, this.player0);
   }
 
-  private setupKeyListenerForPlayer(
-    player0: Fighter,
-    player1: Fighter,
-    keyType: KeyType
-  ) {
+  private setupKeyListenerForPlayer(player0: Player, player1: Player) {
     window.addEventListener("keydown", (event) => {
       switch (event.key) {
-        case keyType.left:
+        case player0.keyType.left:
           player0.moveInDirection(Direction.left);
           break;
-        case keyType.right:
+        case player0.keyType.right:
           player0.moveInDirection(Direction.right);
           break;
-        case keyType.jump:
+        case player0.keyType.jump:
           player0.starJumpPhase();
           break;
-        case keyType.attack:
+        case player0.keyType.attack:
           player0.startAttackPhase(player1);
           if (this.player1.health <= 0) {
             this.finishGame();
@@ -145,16 +138,16 @@ export class CanvasContainer {
 
     window.addEventListener("keyup", (event) => {
       switch (event.key) {
-        case keyType.left:
+        case player0.keyType.left:
           player0.stopInDirection(Direction.left);
           break;
-        case keyType.right:
+        case player0.keyType.right:
           player0.stopInDirection(Direction.right);
           break;
-        case keyType.jump:
+        case player0.keyType.jump:
           player0.stopJumpPhase();
           break;
-        case keyType.attack:
+        case player0.keyType.attack:
           player0.stopAttackPhase();
           break;
         // no default

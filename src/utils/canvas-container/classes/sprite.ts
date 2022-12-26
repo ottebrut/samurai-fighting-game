@@ -1,5 +1,6 @@
-import { Size, SpriteParameters } from "../models";
+import { SpriteParameters } from "./models";
 import { Position } from "./position";
+import { Size } from "../models";
 
 export class Sprite {
   protected readonly canvasSize: Size;

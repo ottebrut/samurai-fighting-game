@@ -1,18 +1,19 @@
-import {
-  Direction,
-  FighterParameters,
-  JumpState,
-  Phase,
-  Size,
-} from "../models";
+import { Size } from "../models";
 import { gravity } from "../constants";
 import { getFullPosition } from "../functions/get-full-position";
 import { Position } from "./position";
 import { Sprite } from "./sprite";
+import {
+  Direction,
+  PlayerParameters,
+  JumpState,
+  KeyType,
+  Phase,
+} from "./models";
 
 const defaultJumpState: JumpState = { counter: 0, phase: Phase.ended };
 
-export class Fighter extends Sprite {
+export class Player extends Sprite {
   protected readonly _size: Size = { width: 50, height: 150 };
 
   private readonly color: string;
@@ -37,6 +38,8 @@ export class Fighter extends Sprite {
 
   private readonly healthBar: HTMLDivElement;
 
+  public readonly keyType: KeyType;
+
   public get size(): Size {
     return this._size;
   }
@@ -45,7 +48,7 @@ export class Fighter extends Sprite {
     return this._health;
   }
 
-  constructor(data: FighterParameters) {
+  constructor(data: PlayerParameters) {
     super(data);
 
     const {
@@ -62,6 +65,22 @@ export class Fighter extends Sprite {
     };
 
     this.healthBar = healthBar;
+
+    if (data.type === "left") {
+      this.keyType = {
+        left: "a",
+        right: "d",
+        jump: "w",
+        attack: "s",
+      };
+    } else {
+      this.keyType = {
+        left: "ArrowLeft",
+        right: "ArrowRight",
+        jump: "ArrowUp",
+        attack: "ArrowDown",
+      };
+    }
   }
 
   public draw(): void {
@@ -146,7 +165,7 @@ export class Fighter extends Sprite {
     }
   }
 
-  public startAttackPhase(playerToAttack: Fighter): void {
+  public startAttackPhase(playerToAttack: Player): void {
     if (this.isAttacking || this.attackPhase === Phase.started) {
       return;
     }
