@@ -1,6 +1,10 @@
 import { Size } from "../models";
-import { gravity } from "../constants";
-import { getFullPosition } from "../functions/get-full-position";
+import {
+  gravity,
+  groundOffset,
+  keyTypeByPlayerType,
+} from "../constants/constants";
+import { getBorderCoordinates } from "../functions/get-border-coordinates";
 import { Position } from "./position";
 import { Sprite } from "./sprite";
 import {
@@ -9,29 +13,43 @@ import {
   JumpState,
   KeyType,
   Phase,
+  PlayerStateSprite,
 } from "./models";
 
 const defaultJumpState: JumpState = { counter: 0, phase: Phase.ended };
 
 export class Player extends Sprite {
-  protected readonly _size: Size = { width: 50, height: 150 };
-
-  private readonly color: string;
+  protected readonly healthBoxSize: Size;
 
   private velocityY = 0;
 
+  /**
+   * Contains directions, in which player must go. Last element is the main direction.
+   * As soon as movement button is pressed/released new direction is added/removed;
+   */
   private currentDirections: Direction[] = [];
 
+  private readonly maxJumps = 2;
+
+  /**
+   * In `started` phase, when user pressed jump button and didn't release it yet.
+   */
   private jumpState = defaultJumpState;
 
   private readonly attackingBox: {
     position: Position;
-    size: Size;
     offset: Position;
+    size: Size;
   };
 
+  /**
+   * True, if player is in attack mode.
+   */
   private isAttacking = false;
 
+  /**
+   * In `started` phase, when user pressed attack button and didn't release it yet.
+   */
   private attackPhase = Phase.started;
 
   private _health = 100;
@@ -40,9 +58,7 @@ export class Player extends Sprite {
 
   public readonly keyType: KeyType;
 
-  public get size(): Size {
-    return this._size;
-  }
+  private readonly playerStateSprite: PlayerStateSprite;
 
   public get health(): number {
     return this._health;
@@ -52,68 +68,48 @@ export class Player extends Sprite {
     super(data);
 
     const {
-      color = "red",
       attackingBoxOffset = new Position({ x: 0, y: 0 }),
       healthBar,
+      healthBoxSize,
     } = data;
 
-    this.color = color;
     this.attackingBox = {
       position: new Position(this._position),
       size: { width: 100, height: 50 },
       offset: attackingBoxOffset,
     };
+    this.keyType = keyTypeByPlayerType[data.type];
 
     this.healthBar = healthBar;
+    this.healthBoxSize = healthBoxSize;
 
-    if (data.type === "left") {
-      this.keyType = {
-        left: "a",
-        right: "d",
-        jump: "w",
-        attack: "s",
-      };
-    } else {
-      this.keyType = {
-        left: "ArrowLeft",
-        right: "ArrowRight",
-        jump: "ArrowUp",
-        attack: "ArrowDown",
-      };
-    }
-  }
-
-  public draw(): void {
-    this.canvasContext.fillStyle = this.color;
-    this.canvasContext.fillRect(
-      this._position.x,
-      this._position.y,
-      this._size.width,
-      this._size.height
-    );
-
-    if (this.isAttacking) {
-      this.canvasContext.fillStyle = "green";
-      this.canvasContext.fillRect(
-        this.attackingBox.position.x,
-        this.attackingBox.position.y,
-        this.attackingBox.size.width,
-        this.attackingBox.size.height
-      );
-    }
+    this.playerStateSprite = Object.fromEntries(
+      Object.entries(data.stateSprite).map(([state, sprite]) => {
+        const updatedSprite = {
+          image: new Image(),
+          imageMaxFrames: sprite.imageMaxFrames,
+        };
+        updatedSprite.image.src = sprite.imageSrc;
+        return [state, updatedSprite];
+      })
+    ) as PlayerStateSprite;
   }
 
   public update(): void {
-    this.draw();
+    super.update();
 
+    this.moveY();
+    this.moveX();
+  }
+
+  private moveY(): void {
     this._position.y += this.velocityY;
-    const groundOffset = 95;
     if (
-      this._position.y + this._size.height >=
+      this._position.y + this.healthBoxSize.height >=
       this.canvasSize.height - groundOffset
     ) {
       this._position.y =
-        this.canvasSize.height - this._size.height - groundOffset;
+        this.canvasSize.height - this.healthBoxSize.height - groundOffset;
       this.velocityY = 0;
 
       if (this.jumpState.phase === Phase.ended) {
@@ -122,7 +118,9 @@ export class Player extends Sprite {
     } else {
       this.velocityY += gravity;
     }
+  }
 
+  private moveX(): void {
     if (this.currentDirections.length) {
       const direction =
         this.currentDirections[this.currentDirections.length - 1];
@@ -132,20 +130,29 @@ export class Player extends Sprite {
     this.attackingBox.position = this._position.minus(this.attackingBox.offset);
   }
 
-  public moveInDirection(direction: Direction): void {
+  /**
+   * Must be called, when user pressed direction 'left' or 'right' button.
+   */
+  public addDirection(direction: Direction): void {
     this.currentDirections.push(direction);
   }
 
-  public stopInDirection(direction: Direction): void {
+  /**
+   * Must be called, when user released direction 'left' or 'right' button.
+   */
+  public removeDirection(direction: Direction): void {
     this.currentDirections = this.currentDirections.filter(
       (currentDirection) => currentDirection !== direction
     );
   }
 
+  /**
+   * Must be called, when user pressed jump button.
+   */
   public starJumpPhase(): void {
     if (
       this.jumpState.phase === Phase.started ||
-      this.jumpState.counter === 2
+      this.jumpState.counter === this.maxJumps
     ) {
       return;
     }
@@ -157,6 +164,9 @@ export class Player extends Sprite {
     };
   }
 
+  /**
+   * Must be called, when user released jump button.
+   */
   public stopJumpPhase(): void {
     if (this.velocityY === 0) {
       this.jumpState = defaultJumpState;
@@ -165,6 +175,9 @@ export class Player extends Sprite {
     }
   }
 
+  /**
+   * Must be called, when user pressed attack button.
+   */
   public startAttackPhase(playerToAttack: Player): void {
     if (this.isAttacking || this.attackPhase === Phase.started) {
       return;
@@ -176,8 +189,11 @@ export class Player extends Sprite {
       this.isAttacking = false;
     }, 100);
 
-    const attackingPosition = getFullPosition(this.attackingBox);
-    const playerToAttackPosition = getFullPosition(playerToAttack);
+    const attackingPosition = getBorderCoordinates(this.attackingBox);
+    const playerToAttackPosition = getBorderCoordinates({
+      position: playerToAttack.position,
+      size: playerToAttack.healthBoxSize,
+    });
     if (
       attackingPosition.leftTop.lte(playerToAttackPosition.rightBottom) &&
       playerToAttackPosition.leftTop.lte(attackingPosition.rightBottom)
@@ -186,6 +202,9 @@ export class Player extends Sprite {
     }
   }
 
+  /**
+   * Must be called, when user released attack button.
+   */
   public stopAttackPhase(): void {
     this.attackPhase = Phase.ended;
   }

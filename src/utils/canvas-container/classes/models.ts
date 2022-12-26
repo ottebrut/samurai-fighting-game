@@ -4,7 +4,10 @@ import { Size } from "../models";
 export interface SpriteParameters {
   canvasSize: Size;
   canvasContext: CanvasRenderingContext2D;
+
   position: Position;
+  offset?: Position;
+
   imageSrc: string;
   scale?: number;
   imageMaxFrames?: number;
@@ -12,10 +15,12 @@ export interface SpriteParameters {
 }
 
 export interface PlayerParameters extends SpriteParameters {
-  color?: string;
-  attackingBoxOffset?: Position;
-  healthBar: HTMLDivElement;
   type: "left" | "right";
+  healthBar: HTMLDivElement;
+  healthBoxSize: Size;
+  attackingBoxOffset?: Position;
+
+  stateSprite: PlayerStateSpriteArgument;
 }
 
 export enum Direction {
@@ -39,3 +44,24 @@ export interface KeyType {
   jump: string;
   attack: string;
 }
+
+export enum PlayerState {
+  idle,
+  run,
+}
+
+export type PlayerStateSprite = Record<
+  PlayerState,
+  {
+    image: HTMLImageElement;
+    imageMaxFrames: number;
+  }
+>;
+
+export type PlayerStateSpriteArgument = Record<
+  PlayerState,
+  {
+    imageSrc: string;
+    imageMaxFrames: number;
+  }
+>;

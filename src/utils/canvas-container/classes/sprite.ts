@@ -21,6 +21,8 @@ export class Sprite {
 
   protected readonly framesHold: number;
 
+  protected readonly offset: Position;
+
   public get position(): Position {
     return new Position(this._position);
   }
@@ -33,6 +35,7 @@ export class Sprite {
     scale = 1,
     imageMaxFrames = 1,
     framesHold = 1,
+    offset = new Position({ x: 0, y: 0 }),
   }: SpriteParameters) {
     this.canvasSize = canvasSize;
     this.canvasContext = canvasContext;
@@ -44,9 +47,10 @@ export class Sprite {
     this.scale = scale;
     this.imageMaxFrames = imageMaxFrames;
     this.framesHold = framesHold;
+    this.offset = offset;
   }
 
-  public draw(): void {
+  protected draw(): void {
     const frameWidth = this.image.width / this.imageMaxFrames;
     const imageOffset = frameWidth * this.imageCurrentFrame;
 
@@ -56,16 +60,14 @@ export class Sprite {
       0,
       frameWidth,
       this.image.height,
-      this._position.x,
-      this._position.y,
+      this._position.x - this.offset.x,
+      this._position.y - this.offset.y,
       frameWidth * this.scale,
       this.image.height * this.scale
     );
   }
 
-  public update(): void {
-    this.draw();
-
+  protected animateFrames(): void {
     this.framesElapsed += 1;
     if (this.framesElapsed === this.framesHold) {
       this.framesElapsed = 0;
@@ -75,5 +77,10 @@ export class Sprite {
         this.imageCurrentFrame = 0;
       }
     }
+  }
+
+  public update(): void {
+    this.draw();
+    this.animateFrames();
   }
 }

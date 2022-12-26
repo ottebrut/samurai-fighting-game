@@ -3,6 +3,8 @@ import { Position } from "./classes/position";
 import { Player } from "./classes/player";
 import { Sprite } from "./classes/sprite";
 import { Direction, SpriteParameters } from "./classes/models";
+import { mackParameters } from "./constants/players/mack";
+import { kenjiParameters } from "./constants/players/kenji";
 
 export class CanvasContainer {
   public static setupCanvas(
@@ -52,26 +54,24 @@ export class CanvasContainer {
     private readonly timerContainer: HTMLDivElement,
     private readonly resultContainer: HTMLDivElement
   ) {
-    this.context = canvas.getContext("2d")!;
-
     this.canvas.width = this.size.width;
     this.canvas.height = this.size.height;
+    this.context = canvas.getContext("2d")!;
 
     this.player0 = new Player({
       ...this.spriteParams,
-      position: new Position({ x: 0, y: 0 }),
-      healthBar: player0HealthBar,
-      imageSrc: "",
+      ...mackParameters,
       type: "left",
+      healthBar: player0HealthBar,
+      position: new Position({ x: 200, y: 400 }),
     });
     this.player1 = new Player({
       ...this.spriteParams,
-      position: new Position({ x: 400, y: 100 }),
-      color: "blue",
-      attackingBoxOffset: new Position({ x: 50, y: 0 }),
-      healthBar: player1HealthBar,
-      imageSrc: "",
+      ...kenjiParameters,
       type: "right",
+      healthBar: player1HealthBar,
+      position: new Position({ x: 700, y: 400 }),
+      attackingBoxOffset: new Position({ x: 50, y: 0 }),
     });
   }
 
@@ -118,10 +118,10 @@ export class CanvasContainer {
     window.addEventListener("keydown", (event) => {
       switch (event.key) {
         case player0.keyType.left:
-          player0.moveInDirection(Direction.left);
+          player0.addDirection(Direction.left);
           break;
         case player0.keyType.right:
-          player0.moveInDirection(Direction.right);
+          player0.addDirection(Direction.right);
           break;
         case player0.keyType.jump:
           player0.starJumpPhase();
@@ -139,10 +139,10 @@ export class CanvasContainer {
     window.addEventListener("keyup", (event) => {
       switch (event.key) {
         case player0.keyType.left:
-          player0.stopInDirection(Direction.left);
+          player0.removeDirection(Direction.left);
           break;
         case player0.keyType.right:
-          player0.stopInDirection(Direction.right);
+          player0.removeDirection(Direction.right);
           break;
         case player0.keyType.jump:
           player0.stopJumpPhase();
