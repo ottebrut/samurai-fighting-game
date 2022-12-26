@@ -3,8 +3,12 @@ import { Direction, Size } from "./models";
 import { Position } from "./classes/position";
 
 export class CanvasContainer {
-  public static setupCanvas(canvas: HTMLCanvasElement): void {
-    new CanvasContainer(canvas).setupCanvas();
+  public static setupCanvas(
+    canvas: HTMLCanvasElement,
+    player0HealthBar: HTMLDivElement,
+    player1HealthBar: HTMLDivElement
+  ): void {
+    new CanvasContainer(canvas).setupCanvas(player0HealthBar, player1HealthBar);
   }
 
   private readonly context: CanvasRenderingContext2D;
@@ -18,7 +22,10 @@ export class CanvasContainer {
     this.context = canvas.getContext("2d")!;
   }
 
-  private setupCanvas(): void {
+  private setupCanvas(
+    player0HealthBar: HTMLDivElement,
+    player1HealthBar: HTMLDivElement
+  ): void {
     this.canvas.width = 1024;
     this.canvas.height = 576;
 
@@ -29,12 +36,14 @@ export class CanvasContainer {
     const player0 = new Sprite({
       ...playerArguments,
       position: new Position({ x: 0, y: 0 }),
+      healthBar: player0HealthBar,
     });
     const player1 = new Sprite({
       ...playerArguments,
       position: new Position({ x: 400, y: 100 }),
       color: "blue",
       attackingBoxOffset: new Position({ x: 50, y: 0 }),
+      healthBar: player1HealthBar,
     });
 
     const animate = () => {

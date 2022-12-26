@@ -34,6 +34,8 @@ export class Sprite {
 
   private health = 100;
 
+  private readonly healthBar: HTMLDivElement;
+
   public get size(): Size {
     return { ...this._size };
   }
@@ -48,23 +50,27 @@ export class Sprite {
     position,
     color = "red",
     attackingBoxOffset = new Position({ x: 0, y: 0 }),
+    healthBar,
   }: {
     canvasSize: Size;
     canvasContext: CanvasRenderingContext2D;
     position: Position;
     color?: string;
     attackingBoxOffset?: Position;
+    healthBar: HTMLDivElement;
   }) {
     this.canvasSize = canvasSize;
     this.canvasContext = canvasContext;
-    this._position = position;
-    this.color = color;
 
+    this.color = color;
+    this._position = position;
     this.attackingBox = {
       position: new Position(this._position),
       size: { width: 100, height: 50 },
       offset: attackingBoxOffset,
     };
+
+    this.healthBar = healthBar;
   }
 
   public draw(): void {
@@ -171,5 +177,6 @@ export class Sprite {
 
   public getHit(): void {
     this.health -= 20;
+    this.healthBar.style.width = `${this.health}%`;
   }
 }

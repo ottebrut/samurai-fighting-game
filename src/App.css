@@ -1,0 +1,51 @@
+.container {
+  position: relative;
+
+  display: inline-block;
+}
+
+.interface {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  padding: 20px;
+}
+
+.health-bar-container {
+  position: relative;
+
+  height: 30px;
+  width: 100%;
+
+  background: red;
+}
+
+.health-bar {
+  position: absolute;
+
+  width: 100%;
+  height: 100%;
+
+  background: blue;
+}
+
+.health-bar-player-0 {
+  right: 0;
+}
+
+.timer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 100px;
+  height: 100px;
+
+  background: yellow;
+}
