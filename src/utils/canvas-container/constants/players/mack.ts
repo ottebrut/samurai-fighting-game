@@ -18,5 +18,13 @@ export const mackParameters: PartialPlayerParameters = {
       imageSrc: "./assets/samuraiMack/Run.png",
       imageMaxFrames: 8,
     },
+    [PlayerState.jump]: {
+      imageSrc: "./assets/samuraiMack/Jump.png",
+      imageMaxFrames: 2,
+    },
+    [PlayerState.fall]: {
+      imageSrc: "./assets/samuraiMack/Fall.png",
+      imageMaxFrames: 2,
+    },
   },
 };

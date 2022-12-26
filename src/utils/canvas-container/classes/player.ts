@@ -94,6 +94,16 @@ export class Player extends Sprite {
 
     this.moveY();
     this.moveX();
+
+    if (this.velocityY < 0) {
+      this.switchState(PlayerState.jump);
+    } else if (this.velocityY > 0) {
+      this.switchState(PlayerState.fall);
+    } else if (this.currentDirections.length) {
+      this.switchState(PlayerState.run);
+    } else {
+      this.switchState(PlayerState.idle);
+    }
   }
 
   private moveY(): void {
@@ -119,10 +129,6 @@ export class Player extends Sprite {
       const direction =
         this.currentDirections[this.currentDirections.length - 1];
       this._position.x += direction === Direction.left ? -6 : 6;
-
-      this.switchState(PlayerState.run);
-    } else {
-      this.switchState(PlayerState.idle);
     }
 
     this.attackingBox.position = this._position.minus(this.attackingBox.offset);

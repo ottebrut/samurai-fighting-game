@@ -48,6 +48,8 @@ export interface KeyType {
 export enum PlayerState {
   idle,
   run,
+  jump,
+  fall,
 }
 
 export type PlayerStateSprite = Record<
