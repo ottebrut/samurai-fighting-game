@@ -19,7 +19,7 @@ export class Sprite {
 
   protected framesElapsed = 0;
 
-  protected readonly framesHold: number;
+  protected framesHold: number;
 
   protected readonly offset: Position;
 

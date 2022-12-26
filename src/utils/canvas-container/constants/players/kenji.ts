@@ -13,18 +13,27 @@ export const kenjiParameters: PartialPlayerParameters = {
     [PlayerState.idle]: {
       imageSrc: "./assets/kenji/Idle.png",
       imageMaxFrames: 4,
+      framesHold: 25,
     },
     [PlayerState.run]: {
       imageSrc: "./assets/kenji/Run.png",
       imageMaxFrames: 8,
+      framesHold: 9,
     },
     [PlayerState.jump]: {
       imageSrc: "./assets/kenji/Jump.png",
       imageMaxFrames: 2,
+      framesHold: 25,
     },
     [PlayerState.fall]: {
       imageSrc: "./assets/kenji/Fall.png",
       imageMaxFrames: 2,
+      framesHold: 25,
+    },
+    [PlayerState.attack]: {
+      imageSrc: "./assets/kenji/Attack1.png",
+      imageMaxFrames: 4,
+      framesHold: 10,
     },
   },
 };

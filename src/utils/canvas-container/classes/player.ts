@@ -30,7 +30,7 @@ export class Player extends Sprite {
    */
   private currentDirections: Direction[] = [];
 
-  private readonly maxJumps = 2;
+  private readonly maxJumps = 1;
 
   /**
    * In `started` phase, when user pressed jump button and didn't release it yet.
@@ -51,7 +51,7 @@ export class Player extends Sprite {
   /**
    * In `started` phase, when user pressed attack button and didn't release it yet.
    */
-  private attackPhase = Phase.started;
+  private attackPhase = Phase.ended;
 
   private _health = 100;
 
@@ -90,7 +90,7 @@ export class Player extends Sprite {
   }
 
   public update(): void {
-    super.update();
+    super.draw();
 
     this.moveY();
     this.moveX();
@@ -104,6 +104,8 @@ export class Player extends Sprite {
     } else {
       this.switchState(PlayerState.idle);
     }
+
+    this.animateFrames();
   }
 
   private moveY(): void {
@@ -161,7 +163,7 @@ export class Player extends Sprite {
       return;
     }
 
-    this.velocityY = -8;
+    this.velocityY = -9;
     this.jumpState = {
       counter: this.jumpState.counter + 1,
       phase: Phase.started,
@@ -188,6 +190,7 @@ export class Player extends Sprite {
     }
 
     this.attackPhase = Phase.started;
+    this.switchState(PlayerState.attack);
     this.isAttacking = true;
     setTimeout(() => {
       this.isAttacking = false;
@@ -214,12 +217,20 @@ export class Player extends Sprite {
   }
 
   private switchState(state: PlayerState) {
+    if (
+      this.currentState === PlayerState.attack &&
+      this.imageCurrentFrame < this.imageMaxFrames - 1
+    ) {
+      return;
+    }
+
     if (this.currentState !== state) {
       this.currentState = state;
 
       const stateSprite = this.stateSprite[state];
       this.image.src = stateSprite.imageSrc;
       this.imageMaxFrames = stateSprite.imageMaxFrames;
+      this.framesHold = stateSprite.framesHold;
 
       this.imageCurrentFrame = 0;
       this.framesElapsed = 0;

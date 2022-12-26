@@ -50,6 +50,7 @@ export enum PlayerState {
   run,
   jump,
   fall,
+  attack,
 }
 
 export type PlayerStateSprite = Record<
@@ -57,5 +58,6 @@ export type PlayerStateSprite = Record<
   {
     imageSrc: string;
     imageMaxFrames: number;
+    framesHold: number;
   }
 >;
