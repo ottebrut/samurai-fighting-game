@@ -1,3 +1,5 @@
+import { Position } from "./classes/position";
+
 export interface Size {
   width: number;
   height: number;
@@ -23,4 +25,20 @@ export interface KeyType {
   right: string;
   jump: string;
   attack: string;
+}
+
+export interface SpriteParameters {
+  canvasSize: Size;
+  canvasContext: CanvasRenderingContext2D;
+  position: Position;
+  imageSrc: string;
+  scale?: number;
+  imageMaxFrames?: number;
+  framesHold?: number;
+}
+
+export interface FighterParameters extends SpriteParameters {
+  color?: string;
+  attackingBoxOffset?: Position;
+  healthBar: HTMLDivElement;
 }

@@ -18,7 +18,7 @@ export class CanvasContainer {
       timerContainer,
       resultContainer
     );
-    canvasContainer.setupCanvas();
+    canvasContainer.setupAnimation();
   }
 
   private readonly context: CanvasRenderingContext2D;
@@ -47,7 +47,7 @@ export class CanvasContainer {
     this.canvas.height = this.size.height;
 
     const playerArguments = {
-      canvasSize: this.size,
+      canvasSize: { ...this.size },
       canvasContext: this.context,
     };
     this.player0 = new Fighter({
@@ -66,12 +66,21 @@ export class CanvasContainer {
     });
   }
 
-  private setupCanvas(): void {
+  private setupAnimation(): void {
     const background = new Sprite({
-      canvasSize: this.size,
+      canvasSize: { ...this.size },
       canvasContext: this.context,
       position: new Position({ x: 0, y: 0 }),
       imageSrc: "./assets/background.png",
+    });
+    const shop = new Sprite({
+      canvasSize: { ...this.size },
+      canvasContext: this.context,
+      position: new Position({ x: 620, y: 127 }),
+      imageSrc: "./assets/shop.png",
+      scale: 2.75,
+      imageMaxFrames: 6,
+      framesHold: 22,
     });
 
     const animate = () => {
@@ -81,6 +90,7 @@ export class CanvasContainer {
       this.context.fillRect(0, 0, this.size.width, this.size.height);
 
       background.update();
+      shop.update();
 
       this.player0.update();
       this.player1.update();
@@ -186,7 +196,7 @@ export class CanvasContainer {
     if (this.player0.health === this.player1.health) {
       setResult("Draw");
     } else if (this.player0.health > this.player1.health) {
-      setResult("Maoko wins");
+      setResult("Mack wins");
     } else {
       setResult("Kenji wins");
     }

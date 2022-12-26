@@ -1,4 +1,10 @@
-import { Direction, JumpState, Phase, Size } from "../models";
+import {
+  Direction,
+  FighterParameters,
+  JumpState,
+  Phase,
+  Size,
+} from "../models";
 import { gravity } from "../constants";
 import { getFullPosition } from "../functions/get-full-position";
 import { Position } from "./position";
@@ -31,19 +37,15 @@ export class Fighter extends Sprite {
 
   private readonly healthBar: HTMLDivElement;
 
+  public get size(): Size {
+    return this._size;
+  }
+
   public get health(): number {
     return this._health;
   }
 
-  constructor(data: {
-    canvasSize: Size;
-    canvasContext: CanvasRenderingContext2D;
-    position: Position;
-    color?: string;
-    attackingBoxOffset?: Position;
-    healthBar: HTMLDivElement;
-    imageSrc: string;
-  }) {
+  constructor(data: FighterParameters) {
     super(data);
 
     const {
@@ -86,8 +88,13 @@ export class Fighter extends Sprite {
     this.draw();
 
     this._position.y += this.velocityY;
-    if (this._position.y + this._size.height >= this.canvasSize.height) {
-      this._position.y = this.canvasSize.height - this._size.height;
+    const groundOffset = 95;
+    if (
+      this._position.y + this._size.height >=
+      this.canvasSize.height - groundOffset
+    ) {
+      this._position.y =
+        this.canvasSize.height - this._size.height - groundOffset;
       this.velocityY = 0;
 
       if (this.jumpState.phase === Phase.ended) {

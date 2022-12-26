@@ -1,4 +1,4 @@
-import { Size } from "../models";
+import { Size, SpriteParameters } from "../models";
 import { Position } from "./position";
 
 export class Sprite {
@@ -6,15 +6,19 @@ export class Sprite {
 
   protected readonly canvasContext: CanvasRenderingContext2D;
 
-  protected readonly _size: Size = { width: 50, height: 150 };
-
   protected readonly _position: Position;
 
   protected readonly image: HTMLImageElement;
 
-  public get size(): Size {
-    return { ...this._size };
-  }
+  protected readonly scale: number;
+
+  protected readonly imageMaxFrames: number;
+
+  protected imageCurrentFrame = 0;
+
+  protected framesElapsed = 0;
+
+  protected readonly framesHold: number;
 
   public get position(): Position {
     return new Position(this._position);
@@ -25,12 +29,10 @@ export class Sprite {
     canvasContext,
     position,
     imageSrc,
-  }: {
-    canvasSize: Size;
-    canvasContext: CanvasRenderingContext2D;
-    position: Position;
-    imageSrc: string;
-  }) {
+    scale = 1,
+    imageMaxFrames = 1,
+    framesHold = 1,
+  }: SpriteParameters) {
     this.canvasSize = canvasSize;
     this.canvasContext = canvasContext;
 
@@ -38,17 +40,39 @@ export class Sprite {
 
     this.image = new Image();
     this.image.src = imageSrc;
+    this.scale = scale;
+    this.imageMaxFrames = imageMaxFrames;
+    this.framesHold = framesHold;
   }
 
   public draw(): void {
+    const frameWidth = this.image.width / this.imageMaxFrames;
+    const imageOffset = frameWidth * this.imageCurrentFrame;
+
     this.canvasContext.drawImage(
       this.image,
+      imageOffset,
+      0,
+      frameWidth,
+      this.image.height,
       this._position.x,
-      this._position.y
+      this._position.y,
+      frameWidth * this.scale,
+      this.image.height * this.scale
     );
   }
 
   public update(): void {
     this.draw();
+
+    this.framesElapsed += 1;
+    if (this.framesElapsed === this.framesHold) {
+      this.framesElapsed = 0;
+
+      this.imageCurrentFrame += 1;
+      if (this.imageCurrentFrame === this.imageMaxFrames) {
+        this.imageCurrentFrame = 0;
+      }
+    }
   }
 }
