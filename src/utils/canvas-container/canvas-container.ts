@@ -1,5 +1,5 @@
 import { Sprite } from "./classes/sprite";
-import { Direction, Size } from "./models";
+import { Direction, KeyType, Size } from "./models";
 import { Position } from "./classes/position";
 
 export class CanvasContainer {
@@ -80,36 +80,40 @@ export class CanvasContainer {
   }
 
   private setupKeyListeners(): void {
+    this.setupKeyListenerForPlayer(this.player0, this.player1, {
+      left: "a",
+      right: "d",
+      jump: "w",
+      attack: "s",
+    });
+
+    this.setupKeyListenerForPlayer(this.player1, this.player0, {
+      left: "ArrowLeft",
+      right: "ArrowRight",
+      jump: "ArrowUp",
+      attack: "ArrowDown",
+    });
+  }
+
+  private setupKeyListenerForPlayer(
+    player0: Sprite,
+    player1: Sprite,
+    keyType: KeyType
+  ) {
     window.addEventListener("keydown", (event) => {
       switch (event.key) {
-        case "a":
-          this.player0.moveInDirection(Direction.left);
+        case keyType.left:
+          player0.moveInDirection(Direction.left);
           break;
-        case "d":
-          this.player0.moveInDirection(Direction.right);
+        case keyType.right:
+          player0.moveInDirection(Direction.right);
           break;
-        case "w":
-          this.player0.starJumpPhase();
+        case keyType.jump:
+          player0.starJumpPhase();
           break;
-        case "s":
-          this.player0.startAttackPhase(this.player1);
+        case keyType.attack:
+          player0.startAttackPhase(player1);
           if (this.player1.health <= 0) {
-            this.finishGame();
-          }
-          break;
-
-        case "ArrowLeft":
-          this.player1.moveInDirection(Direction.left);
-          break;
-        case "ArrowRight":
-          this.player1.moveInDirection(Direction.right);
-          break;
-        case "ArrowUp":
-          this.player1.starJumpPhase();
-          break;
-        case "ArrowDown":
-          this.player1.startAttackPhase(this.player0);
-          if (this.player0.health <= 0) {
             this.finishGame();
           }
           break;
@@ -119,30 +123,17 @@ export class CanvasContainer {
 
     window.addEventListener("keyup", (event) => {
       switch (event.key) {
-        case "a":
-          this.player0.stopInDirection(Direction.left);
+        case keyType.left:
+          player0.stopInDirection(Direction.left);
           break;
-        case "d":
-          this.player0.stopInDirection(Direction.right);
+        case keyType.right:
+          player0.stopInDirection(Direction.right);
           break;
-        case "w":
-          this.player0.stopJumpPhase();
+        case keyType.jump:
+          player0.stopJumpPhase();
           break;
-        case "s":
-          this.player0.stopAttackPhase();
-          break;
-
-        case "ArrowLeft":
-          this.player1.stopInDirection(Direction.left);
-          break;
-        case "ArrowRight":
-          this.player1.stopInDirection(Direction.right);
-          break;
-        case "ArrowUp":
-          this.player1.stopJumpPhase();
-          break;
-        case "ArrowDown":
-          this.player1.stopAttackPhase();
+        case keyType.attack:
+          player0.stopAttackPhase();
           break;
         // no default
       }
@@ -154,7 +145,7 @@ export class CanvasContainer {
       this.timerContainer.innerHTML = seconds.toString();
     };
 
-    let seconds = 10;
+    let seconds = 60;
     setSecondsToHtml(seconds);
 
     const decreaseSecond = () => {
