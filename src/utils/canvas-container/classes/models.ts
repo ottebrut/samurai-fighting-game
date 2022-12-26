@@ -18,7 +18,11 @@ export interface PlayerParameters extends SpriteParameters {
   type: "left" | "right";
   healthBar: HTMLDivElement;
   healthBoxSize: Size;
-  attackingBoxOffset?: Position;
+  attackingBox: {
+    size: Size;
+    offset: Position;
+  };
+  attackFrame: number;
 
   stateSprite: PlayerStateSprite;
 }

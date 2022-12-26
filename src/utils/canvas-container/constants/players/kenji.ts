@@ -4,11 +4,16 @@ import { PlayerState } from "../../classes/models";
 
 export const kenjiParameters: PartialPlayerParameters = {
   healthBoxSize: { width: 42, height: 110 },
+  attackingBox: {
+    size: { width: 100, height: 60 },
+    offset: new Position({ x: 150, y: -10 }),
+  },
   imageSrc: "./assets/kenji/Idle.png",
   imageMaxFrames: 4,
   framesHold: 25,
   scale: 2.24,
   offset: new Position({ x: 195, y: 176 }),
+  attackFrame: 2,
   stateSprite: {
     [PlayerState.idle]: {
       imageSrc: "./assets/kenji/Idle.png",

@@ -44,14 +44,13 @@ export class Player extends Sprite {
   };
 
   /**
-   * True, if player is in attack mode.
-   */
-  private isAttacking = false;
-
-  /**
    * In `started` phase, when user pressed attack button and didn't release it yet.
    */
   private attackPhase = Phase.ended;
+
+  private readonly attackFrame: number;
+
+  private playerToAttack: Player | undefined;
 
   private _health = 100;
 
@@ -70,30 +69,29 @@ export class Player extends Sprite {
   constructor(data: PlayerParameters) {
     super(data);
 
-    const {
-      attackingBoxOffset = new Position({ x: 0, y: 0 }),
-      healthBar,
-      healthBoxSize,
-    } = data;
-
-    this.attackingBox = {
-      position: new Position(this._position),
-      size: { width: 100, height: 50 },
-      offset: attackingBoxOffset,
-    };
-    this.keyType = keyTypeByPlayerType[data.type];
+    const { attackingBox, healthBar, healthBoxSize, attackFrame } = data;
 
     this.healthBar = healthBar;
     this.healthBoxSize = healthBoxSize;
+    this.attackingBox = {
+      position: new Position(this._position).minus(attackingBox.offset),
+      size: attackingBox.size,
+      offset: attackingBox.offset,
+    };
+    this.attackFrame = attackFrame;
 
+    this.keyType = keyTypeByPlayerType[data.type];
     this.stateSprite = data.stateSprite;
   }
 
   public update(): void {
-    super.draw();
+    this.draw();
+
+    this.checkAttack();
 
     this.moveY();
     this.moveX();
+    this.attackingBox.position = this._position.minus(this.attackingBox.offset);
 
     if (this.velocityY < 0) {
       this.switchState(PlayerState.jump);
@@ -132,8 +130,27 @@ export class Player extends Sprite {
         this.currentDirections[this.currentDirections.length - 1];
       this._position.x += direction === Direction.left ? -6 : 6;
     }
+  }
 
-    this.attackingBox.position = this._position.minus(this.attackingBox.offset);
+  private checkAttack(): void {
+    if (
+      this.currentState === PlayerState.attack &&
+      this.playerToAttack &&
+      this.imageCurrentFrame === this.attackFrame &&
+      this.framesElapsed === 0
+    ) {
+      const attackingPosition = getBorderCoordinates(this.attackingBox);
+      const playerToAttackPosition = getBorderCoordinates({
+        position: this.playerToAttack.position,
+        size: this.playerToAttack.healthBoxSize,
+      });
+      if (
+        attackingPosition.leftTop.lte(playerToAttackPosition.rightBottom) &&
+        playerToAttackPosition.leftTop.lte(attackingPosition.rightBottom)
+      ) {
+        this.playerToAttack.getHit();
+      }
+    }
   }
 
   /**
@@ -185,28 +202,16 @@ export class Player extends Sprite {
    * Must be called, when user pressed attack button.
    */
   public startAttackPhase(playerToAttack: Player): void {
-    if (this.isAttacking || this.attackPhase === Phase.started) {
+    if (
+      this.currentState === PlayerState.attack ||
+      this.attackPhase === Phase.started
+    ) {
       return;
     }
 
     this.attackPhase = Phase.started;
     this.switchState(PlayerState.attack);
-    this.isAttacking = true;
-    setTimeout(() => {
-      this.isAttacking = false;
-    }, 100);
-
-    const attackingPosition = getBorderCoordinates(this.attackingBox);
-    const playerToAttackPosition = getBorderCoordinates({
-      position: playerToAttack.position,
-      size: playerToAttack.healthBoxSize,
-    });
-    if (
-      attackingPosition.leftTop.lte(playerToAttackPosition.rightBottom) &&
-      playerToAttackPosition.leftTop.lte(attackingPosition.rightBottom)
-    ) {
-      playerToAttack.getHit();
-    }
+    this.playerToAttack = playerToAttack;
   }
 
   /**

@@ -71,7 +71,6 @@ export class CanvasContainer {
       type: "right",
       healthBar: player1HealthBar,
       position: new Position({ x: 700, y: 400 }),
-      attackingBoxOffset: new Position({ x: 50, y: 0 }),
     });
   }
 

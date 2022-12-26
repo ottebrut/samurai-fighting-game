@@ -4,11 +4,16 @@ import { PlayerState } from "../../classes/models";
 
 export const mackParameters: PartialPlayerParameters = {
   healthBoxSize: { width: 55, height: 110 },
+  attackingBox: {
+    size: { width: 145, height: 60 },
+    offset: new Position({ x: -100, y: 10 }),
+  },
   imageSrc: "./assets/samuraiMack/Idle.png",
   imageMaxFrames: 8,
   framesHold: 25,
   scale: 2.5,
   offset: new Position({ x: 220, y: 195 }),
+  attackFrame: 5,
   stateSprite: {
     [PlayerState.idle]: {
       imageSrc: "./assets/samuraiMack/Idle.png",
