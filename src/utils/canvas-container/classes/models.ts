@@ -20,6 +20,7 @@ export interface PlayerParameters extends SpriteParameters {
 
   healthBar: HTMLDivElement;
   healthBoxSize: Size;
+  healthDamage: number;
   attackingBox: {
     size: Size;
     offset: Position;

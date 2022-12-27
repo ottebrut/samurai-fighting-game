@@ -5,6 +5,7 @@ import { PlayerState } from "../../classes/models";
 export const kenjiParameters: PartialPlayerParameters = {
   name: "Kenji",
   healthBoxSize: { width: 42, height: 110 },
+  healthDamage: 20,
   attackingBox: {
     size: { width: 100, height: 60 },
     offset: new Position({ x: 150, y: -10 }),

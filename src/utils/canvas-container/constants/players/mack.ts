@@ -5,6 +5,7 @@ import { PlayerState } from "../../classes/models";
 export const mackParameters: PartialPlayerParameters = {
   name: "Mack",
   healthBoxSize: { width: 55, height: 110 },
+  healthDamage: 10,
   attackingBox: {
     size: { width: 145, height: 60 },
     offset: new Position({ x: -100, y: 10 }),

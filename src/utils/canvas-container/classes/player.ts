@@ -56,6 +56,8 @@ export class Player extends Sprite {
 
   private _health = 100;
 
+  private readonly healthDamage: number;
+
   private readonly healthBar: HTMLDivElement;
 
   public readonly keyType: KeyType;
@@ -85,10 +87,12 @@ export class Player extends Sprite {
       name,
       isGameFinished,
       finishGame,
+      healthDamage,
     } = data;
 
     this.name = name;
 
+    this.healthDamage = healthDamage;
     this.healthBar = healthBar;
     this.healthBoxSize = healthBoxSize;
     this.attackingBox = {
@@ -264,7 +268,7 @@ export class Player extends Sprite {
       return;
     }
 
-    this._health -= 20;
+    this._health -= this.healthDamage;
     this.healthBar.style.width = `${this._health}%`;
 
     this.velocityY = 0;
