@@ -1,3 +1,4 @@
+import gsap from "gsap";
 import { Size } from "../models";
 import {
   gravity,
@@ -269,7 +270,9 @@ export class Player extends Sprite {
     }
 
     this._health -= this.healthDamage;
-    this.healthBar.style.width = `${this._health}%`;
+    gsap.to(`#${this.healthBar.id}`, {
+      width: `${this._health}%`,
+    });
 
     this.velocityY = 0;
     if (this._health <= 0) {

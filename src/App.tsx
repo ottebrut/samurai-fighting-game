@@ -29,7 +29,11 @@ function App() {
     <div className="container" ref={containerRef}>
       <div className="interface">
         <div className="health-bar-container">
-          <div className="health-bar" ref={player0HealthBarRef} />
+          <div
+            className="health-bar"
+            id="player-0-health"
+            ref={player0HealthBarRef}
+          />
           <div className="player-name" ref={player0NameRef} />
           <div className="keys">WASD</div>
         </div>
@@ -41,7 +45,11 @@ function App() {
           <div className="border-right" />
         </div>
         <div className="health-bar-container">
-          <div className="health-bar" ref={player1HealthBarRef} />
+          <div
+            className="health-bar"
+            id="player-1-health"
+            ref={player1HealthBarRef}
+          />
           <div className="player-name" ref={player1NameRef} />
           <div className="keys">Arrows</div>
         </div>
