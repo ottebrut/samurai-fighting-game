@@ -20,6 +20,8 @@ import {
 const defaultJumpState: JumpState = { counter: 0, phase: Phase.ended };
 
 export class Player extends Sprite {
+  public readonly name: string;
+
   protected readonly healthBoxSize: Size;
 
   private velocityY = 0;
@@ -62,6 +64,12 @@ export class Player extends Sprite {
 
   private currentState: PlayerState = PlayerState.idle;
 
+  private readonly isGameFinished: () => boolean;
+
+  private readonly finishGame: () => void;
+
+  private isDead = false;
+
   public get health(): number {
     return this._health;
   }
@@ -69,7 +77,17 @@ export class Player extends Sprite {
   constructor(data: PlayerParameters) {
     super(data);
 
-    const { attackingBox, healthBar, healthBoxSize, attackFrame } = data;
+    const {
+      attackingBox,
+      healthBar,
+      healthBoxSize,
+      attackFrame,
+      name,
+      isGameFinished,
+      finishGame,
+    } = data;
+
+    this.name = name;
 
     this.healthBar = healthBar;
     this.healthBoxSize = healthBoxSize;
@@ -82,17 +100,28 @@ export class Player extends Sprite {
 
     this.keyType = keyTypeByPlayerType[data.type];
     this.stateSprite = data.stateSprite;
+
+    this.isGameFinished = isGameFinished;
+    this.finishGame = finishGame;
   }
 
   public update(): void {
     this.draw();
 
+    if (this.isDead) {
+      return;
+    }
     if (
-      this.currentState === PlayerState.take_hit &&
+      (this.currentState === PlayerState.take_hit ||
+        this.currentState === PlayerState.death) &&
       (this.imageCurrentFrame < this.imageMaxFrames - 1 ||
         this.framesElapsed < this.framesHold - 1)
     ) {
       this.animateFrames();
+      return;
+    }
+    if (this.currentState === PlayerState.death) {
+      this.isDead = true;
       return;
     }
 
@@ -231,18 +260,30 @@ export class Player extends Sprite {
   }
 
   public takeHit(): void {
+    if (this.isGameFinished()) {
+      return;
+    }
+
     this._health -= 20;
     this.healthBar.style.width = `${this._health}%`;
 
     this.velocityY = 0;
-    this.switchState(PlayerState.take_hit);
+    if (this._health <= 0) {
+      this.switchState(PlayerState.death);
+      this.finishGame();
+    } else {
+      this.switchState(PlayerState.take_hit);
+    }
   }
 
   private switchState(state: PlayerState) {
     if (
-      this.currentState === PlayerState.attack &&
-      (this.imageCurrentFrame < this.imageMaxFrames - 1 ||
-        this.framesElapsed < this.framesHold - 1)
+      this.isDead ||
+      ((this.currentState === PlayerState.attack ||
+        this.currentState === PlayerState.take_hit ||
+        this.currentState === PlayerState.death) &&
+        (this.imageCurrentFrame < this.imageMaxFrames - 1 ||
+          this.framesElapsed < this.framesHold - 1))
     ) {
       return;
     }

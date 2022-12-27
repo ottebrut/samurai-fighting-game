@@ -16,6 +16,8 @@ export interface SpriteParameters {
 
 export interface PlayerParameters extends SpriteParameters {
   type: "left" | "right";
+  name: string;
+
   healthBar: HTMLDivElement;
   healthBoxSize: Size;
   attackingBox: {
@@ -25,6 +27,9 @@ export interface PlayerParameters extends SpriteParameters {
   attackFrame: number;
 
   stateSprite: PlayerStateSprite;
+
+  isGameFinished: () => boolean;
+  finishGame: () => void;
 }
 
 export enum Direction {
@@ -56,6 +61,7 @@ export enum PlayerState {
   fall,
   attack,
   take_hit,
+  death,
 }
 
 export type PlayerStateSprite = Record<

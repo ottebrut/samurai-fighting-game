@@ -58,8 +58,13 @@ export class CanvasContainer {
     this.canvas.height = this.size.height;
     this.context = canvas.getContext("2d")!;
 
+    const gameParams = {
+      isGameFinished: () => this.isGameFinished,
+      finishGame: () => this.finishGame(),
+    };
     this.player0 = new Player({
       ...this.spriteParams,
+      ...gameParams,
       ...mackParameters,
       type: "left",
       healthBar: player0HealthBar,
@@ -67,6 +72,7 @@ export class CanvasContainer {
     });
     this.player1 = new Player({
       ...this.spriteParams,
+      ...gameParams,
       ...kenjiParameters,
       type: "right",
       healthBar: player1HealthBar,
@@ -127,9 +133,6 @@ export class CanvasContainer {
           break;
         case player0.keyType.attack:
           player0.startAttackPhase(player1);
-          if (this.player1.health <= 0) {
-            this.finishGame();
-          }
           break;
         // no default
       }

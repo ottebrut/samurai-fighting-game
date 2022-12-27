@@ -3,6 +3,7 @@ import { Position } from "../../classes/position";
 import { PlayerState } from "../../classes/models";
 
 export const kenjiParameters: PartialPlayerParameters = {
+  name: "Kenji",
   healthBoxSize: { width: 42, height: 110 },
   attackingBox: {
     size: { width: 100, height: 60 },
@@ -43,6 +44,11 @@ export const kenjiParameters: PartialPlayerParameters = {
     [PlayerState.take_hit]: {
       imageSrc: "./assets/kenji/Take hit.png",
       imageMaxFrames: 3,
+      framesHold: 8,
+    },
+    [PlayerState.death]: {
+      imageSrc: "./assets/kenji/Death.png",
+      imageMaxFrames: 7,
       framesHold: 8,
     },
   },

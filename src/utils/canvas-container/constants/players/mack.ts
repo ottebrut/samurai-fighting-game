@@ -3,6 +3,7 @@ import { Position } from "../../classes/position";
 import { PlayerState } from "../../classes/models";
 
 export const mackParameters: PartialPlayerParameters = {
+  name: "Mack",
   healthBoxSize: { width: 55, height: 110 },
   attackingBox: {
     size: { width: 145, height: 60 },
@@ -43,6 +44,11 @@ export const mackParameters: PartialPlayerParameters = {
     [PlayerState.take_hit]: {
       imageSrc: "./assets/samuraiMack/Take Hit - white silhouette.png",
       imageMaxFrames: 4,
+      framesHold: 8,
+    },
+    [PlayerState.death]: {
+      imageSrc: "./assets/samuraiMack/Death.png",
+      imageMaxFrames: 6,
       framesHold: 8,
     },
   },
