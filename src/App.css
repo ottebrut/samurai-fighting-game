@@ -16,7 +16,7 @@
   align-items: center;
 
   width: 100%;
-  padding: 20px;
+  padding: 40px 20px;
 }
 
 .health-bar-container {
@@ -50,6 +50,40 @@
 
 .health-bar-container:first-child .health-bar {
   right: 0;
+}
+
+.health-bar-container:first-child .player-name,
+.health-bar-container:last-child .player-name {
+  position: absolute;
+  top: -31px;
+
+  color: white;
+  font-size: 22px;
+}
+
+.health-bar-container:first-child .player-name {
+  left: 0;
+}
+
+.health-bar-container:last-child .player-name {
+  right: 0;
+}
+
+.health-bar-container:first-child .keys,
+.health-bar-container:last-child .keys {
+  position: absolute;
+  bottom: -33px;
+
+  color: white;
+  font-size: 22px;
+}
+
+.health-bar-container:first-child .keys {
+  right: 20px;
+}
+
+.health-bar-container:last-child .keys {
+  left: 20px;
 }
 
 .timer-container {

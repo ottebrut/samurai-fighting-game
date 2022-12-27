@@ -10,7 +10,9 @@ export class CanvasContainer {
   public static setupCanvas(
     canvas: HTMLCanvasElement,
     player0HealthBar: HTMLDivElement,
+    player0NameContainer: HTMLDivElement,
     player1HealthBar: HTMLDivElement,
+    player1NameContainer: HTMLDivElement,
     timerContainer: HTMLDivElement,
     resultContainer: HTMLDivElement,
     mainContainer: HTMLDivElement
@@ -18,7 +20,9 @@ export class CanvasContainer {
     const canvasContainer = new CanvasContainer(
       canvas,
       player0HealthBar,
+      player0NameContainer,
       player1HealthBar,
+      player1NameContainer,
       timerContainer,
       resultContainer,
       mainContainer
@@ -52,7 +56,9 @@ export class CanvasContainer {
   constructor(
     private readonly canvas: HTMLCanvasElement,
     player0HealthBar: HTMLDivElement,
+    player0NameContainer: HTMLDivElement,
     player1HealthBar: HTMLDivElement,
+    player1NameContainer: HTMLDivElement,
     private readonly timerContainer: HTMLDivElement,
     private readonly resultContainer: HTMLDivElement,
     private readonly mainContainer: HTMLDivElement
@@ -81,6 +87,11 @@ export class CanvasContainer {
       healthBar: player1HealthBar,
       position: new Position({ x: 700, y: 400 }),
     });
+
+    // eslint-disable-next-line no-param-reassign
+    player0NameContainer.innerHTML = this.player0.name;
+    // eslint-disable-next-line no-param-reassign
+    player1NameContainer.innerHTML = this.player1.name;
   }
 
   private setupAnimation(): void {

@@ -5,7 +5,9 @@ import { CanvasContainer } from "./utils/canvas-container/canvas-container";
 function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const player0HealthBarRef = useRef<HTMLDivElement>(null);
+  const player0NameRef = useRef<HTMLDivElement>(null);
   const player1HealthBarRef = useRef<HTMLDivElement>(null);
+  const player1NameRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<HTMLDivElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -14,7 +16,9 @@ function App() {
     CanvasContainer.setupCanvas(
       canvasRef.current!,
       player0HealthBarRef.current!,
+      player0NameRef.current!,
       player1HealthBarRef.current!,
+      player1NameRef.current!,
       timerRef.current!,
       resultRef.current!,
       containerRef.current!
@@ -26,7 +30,8 @@ function App() {
       <div className="interface">
         <div className="health-bar-container">
           <div className="health-bar" ref={player0HealthBarRef} />
-          <div className="border-right" />
+          <div className="player-name" ref={player0NameRef} />
+          <div className="keys">WASD</div>
         </div>
         <div className="timer-container">
           <div className="timer-counter" ref={timerRef}>
@@ -37,6 +42,8 @@ function App() {
         </div>
         <div className="health-bar-container">
           <div className="health-bar" ref={player1HealthBarRef} />
+          <div className="player-name" ref={player1NameRef} />
+          <div className="keys">Arrows</div>
         </div>
       </div>
 
