@@ -105,9 +105,16 @@ export class Player extends Sprite {
 
     this.keyType = keyTypeByPlayerType[data.type];
     this.stateSprite = data.stateSprite;
+    this.preloadImages();
 
     this.isGameFinished = isGameFinished;
     this.finishGame = finishGame;
+  }
+
+  private preloadImages(): void {
+    (Object.values(PlayerState) as PlayerState[]).forEach((state) => {
+      new Image().src = this.stateSprite[state].imageSrc;
+    });
   }
 
   public update(): void {
