@@ -2,6 +2,9 @@
   position: relative;
 
   display: inline-block;
+
+  --blue: #8798e0;
+  --red: #a5212d;
 }
 
 .interface {
@@ -19,10 +22,21 @@
 .health-bar-container {
   position: relative;
 
-  height: 30px;
+  height: 34px;
   width: 100%;
+  border: 4px solid white;
 
-  background: red;
+  background: var(--red);
+}
+
+.health-bar-container:first-child {
+  border-right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+.health-bar-container:last-child {
+  border-left: 0;
+  border-radius: 0 3px 3px 0;
 }
 
 .health-bar {
@@ -31,23 +45,56 @@
   width: 100%;
   height: 100%;
 
-  background: blue;
+  background: var(--blue);
 }
 
-.health-bar-player-0 {
+.health-bar-container:first-child .health-bar {
   right: 0;
 }
 
-.timer {
+.timer-container {
+  position: relative;
+
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 
-  width: 100px;
-  height: 100px;
+  width: 110px;
+  height: 65px;
+  border: 4px solid white;
+  border-radius: 3px;
 
-  background: yellow;
+  background: var(--blue);
+
+  color: white;
+  font-size: 22px;
+}
+
+.timer-container .border-right,
+.timer-container .border-left {
+  --height: 26px;
+
+  position: absolute;
+  top: calc(50% - var(--height) / 2);
+
+  width: 4px;
+  height: var(--height);
+
+  background: var(--blue);
+}
+
+.timer-container .border-left {
+  left: -4px;
+}
+
+.timer-container .border-right {
+  right: -4px;
+}
+
+.player-1 .border-left,
+.player-0 .border-right {
+  background: var(--red);
 }
 
 .result {
@@ -61,5 +108,7 @@
   align-items: center;
   justify-content: center;
 
-  color: white;
+  color: var(--red);
+  font-size: 40px;
+  -webkit-text-stroke: 1px white;
 }

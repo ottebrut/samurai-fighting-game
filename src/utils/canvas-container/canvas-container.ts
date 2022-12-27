@@ -12,14 +12,16 @@ export class CanvasContainer {
     player0HealthBar: HTMLDivElement,
     player1HealthBar: HTMLDivElement,
     timerContainer: HTMLDivElement,
-    resultContainer: HTMLDivElement
+    resultContainer: HTMLDivElement,
+    mainContainer: HTMLDivElement
   ): void {
     const canvasContainer = new CanvasContainer(
       canvas,
       player0HealthBar,
       player1HealthBar,
       timerContainer,
-      resultContainer
+      resultContainer,
+      mainContainer
     );
     canvasContainer.setupAnimation();
   }
@@ -52,7 +54,8 @@ export class CanvasContainer {
     player0HealthBar: HTMLDivElement,
     player1HealthBar: HTMLDivElement,
     private readonly timerContainer: HTMLDivElement,
-    private readonly resultContainer: HTMLDivElement
+    private readonly resultContainer: HTMLDivElement,
+    private readonly mainContainer: HTMLDivElement
   ) {
     this.canvas.width = this.size.width;
     this.canvas.height = this.size.height;
@@ -191,9 +194,11 @@ export class CanvasContainer {
     if (this.player0.health === this.player1.health) {
       setResult("Draw");
     } else if (this.player0.health > this.player1.health) {
-      setResult("Mack wins");
+      setResult(`${this.player0.name} wins`);
+      this.mainContainer.className += " player-0";
     } else {
-      setResult("Kenji wins");
+      setResult(`${this.player1.name} wins`);
+      this.mainContainer.className += " player-1";
     }
   }
 }

@@ -283,9 +283,11 @@ export class Player extends Sprite {
   private switchState(state: PlayerState) {
     if (
       this.isDead ||
-      ((this.currentState === PlayerState.attack ||
-        this.currentState === PlayerState.take_hit ||
-        this.currentState === PlayerState.death) &&
+      (state !== PlayerState.take_hit &&
+        state !== PlayerState.death &&
+        (this.currentState === PlayerState.attack ||
+          this.currentState === PlayerState.take_hit ||
+          this.currentState === PlayerState.death) &&
         (this.imageCurrentFrame < this.imageMaxFrames - 1 ||
           this.framesElapsed < this.framesHold - 1))
     ) {
