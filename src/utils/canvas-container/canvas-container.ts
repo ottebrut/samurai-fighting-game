@@ -118,6 +118,9 @@ export class CanvasContainer {
       background.update();
       shop.update();
 
+      this.context.fillStyle = "rgba(255, 255, 255, 0.1)";
+      this.context.fillRect(0, 0, this.size.width, this.size.height);
+
       this.player0.update();
       this.player1.update();
     };
