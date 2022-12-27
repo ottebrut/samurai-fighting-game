@@ -85,7 +85,7 @@ export class CanvasContainer {
       ...kenjiParameters,
       type: "right",
       healthBar: player1HealthBar,
-      position: new Position({ x: 700, y: 400 }),
+      position: new Position({ x: 750, y: 400 }),
     });
 
     // eslint-disable-next-line no-param-reassign
