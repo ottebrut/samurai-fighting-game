@@ -87,6 +87,15 @@ export class Player extends Sprite {
   public update(): void {
     this.draw();
 
+    if (
+      this.currentState === PlayerState.take_hit &&
+      (this.imageCurrentFrame < this.imageMaxFrames - 1 ||
+        this.framesElapsed < this.framesHold - 1)
+    ) {
+      this.animateFrames();
+      return;
+    }
+
     this.checkAttack();
 
     this.moveY();
@@ -148,7 +157,7 @@ export class Player extends Sprite {
         attackingPosition.leftTop.lte(playerToAttackPosition.rightBottom) &&
         playerToAttackPosition.leftTop.lte(attackingPosition.rightBottom)
       ) {
-        this.playerToAttack.getHit();
+        this.playerToAttack.takeHit();
       }
     }
   }
@@ -221,10 +230,19 @@ export class Player extends Sprite {
     this.attackPhase = Phase.ended;
   }
 
+  public takeHit(): void {
+    this._health -= 20;
+    this.healthBar.style.width = `${this._health}%`;
+
+    this.velocityY = 0;
+    this.switchState(PlayerState.take_hit);
+  }
+
   private switchState(state: PlayerState) {
     if (
       this.currentState === PlayerState.attack &&
-      this.imageCurrentFrame < this.imageMaxFrames - 1
+      (this.imageCurrentFrame < this.imageMaxFrames - 1 ||
+        this.framesElapsed < this.framesHold - 1)
     ) {
       return;
     }
@@ -238,12 +256,7 @@ export class Player extends Sprite {
       this.framesHold = stateSprite.framesHold;
 
       this.imageCurrentFrame = 0;
-      this.framesElapsed = 0;
+      this.framesElapsed = -1;
     }
-  }
-
-  public getHit(): void {
-    this._health -= 20;
-    this.healthBar.style.width = `${this._health}%`;
   }
 }

@@ -40,5 +40,10 @@ export const mackParameters: PartialPlayerParameters = {
       imageMaxFrames: 6,
       framesHold: 10,
     },
+    [PlayerState.take_hit]: {
+      imageSrc: "./assets/samuraiMack/Take Hit - white silhouette.png",
+      imageMaxFrames: 4,
+      framesHold: 8,
+    },
   },
 };

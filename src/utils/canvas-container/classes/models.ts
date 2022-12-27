@@ -55,6 +55,7 @@ export enum PlayerState {
   jump,
   fall,
   attack,
+  take_hit,
 }
 
 export type PlayerStateSprite = Record<

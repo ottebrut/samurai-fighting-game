@@ -40,5 +40,10 @@ export const kenjiParameters: PartialPlayerParameters = {
       imageMaxFrames: 4,
       framesHold: 10,
     },
+    [PlayerState.take_hit]: {
+      imageSrc: "./assets/kenji/Take hit.png",
+      imageMaxFrames: 3,
+      framesHold: 8,
+    },
   },
 };
