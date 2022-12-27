@@ -112,9 +112,11 @@ export class Player extends Sprite {
   }
 
   private preloadImages(): void {
-    (Object.values(PlayerState) as PlayerState[]).forEach((state) => {
-      new Image().src = this.stateSprite[state].imageSrc;
-    });
+    Object.values(PlayerState)
+      .filter((v) => !Number.isNaN(Number(v)))
+      .forEach((state) => {
+        new Image().src = this.stateSprite[state as PlayerState].imageSrc;
+      });
   }
 
   public update(): void {
